@@ -1,0 +1,17 @@
+Twix 0.0.1
+
+
+Simple twitter client for console
+
+
+Keys:
+
+q - quit
+t - write new message
+
+If you want to post your twit, finish you message with !SEND
+If you want abort and back to your feed, finish your message with !EXIT
+
+new features soon
+
+

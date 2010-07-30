@@ -1,0 +1,86 @@
+module Twix
+  class Client
+    attr_accessor :config
+
+    def initialize
+      @config = Twix::Config.new
+      @oauth = Twix::OAuth.new(@config)
+      link! if !linked?
+    end
+
+    def run!
+      token_hash = { :oauth_token => @config.values[:oauth_token], 
+                     :oauth_token_secret => @config.values[:oauth_token_secret] }
+
+      len = @config.values[:twits_per_page]
+      refresh = @config.values[:refresh]
+      last = ""
+
+      feed = Thread.new do
+        loop do 
+          begin
+            res = @oauth.access_token(token_hash).request(
+              :get, "http://api.twitter.com/1/statuses/home_timeline.json"
+            )
+            twits = JSON.parse(res.body)
+            latest = twits.first
+
+            if last != latest['id']
+              last = latest['id']
+              system('clear')
+              twits[0...len].each do |twit|
+                print("\e[32m#{twit['user']['name']} wrote:\n")
+                print("\e[37m" + twit['text'] + "\n")
+                print "------------------------------------------------\n"
+              end
+            end
+
+            sleep refresh
+          rescue
+          end
+        end
+      end
+
+      while key = STDIN.readline.chomp
+        case key
+        when 'q'
+          feed.kill if key == 'q'
+        when
+          feed.kill
+        else
+
+        system('clear')
+        break
+      end
+      test
+    end
+
+    def test
+      loop do
+        print "sders"
+        sleep 1
+      end
+    end
+
+    private
+
+    def link!
+      if !@config.values[:pin]
+        print("Please go to #{@oauth.authorize_url} and enter PIN number\n")
+        print("PIN:")
+        pin = STDIN.readline.chomp 
+        @config.values[:pin] = pin
+      end
+
+      tokens = @oauth.access_tokens(@config.values[:pin])
+      @config.values[:oauth_token] = tokens.token
+      @config.values[:oauth_token_secret] = tokens.secret
+      @config.update_config_file()
+    end
+
+    def linked?
+      !@config.values[:oauth_token].nil? and !@config.values[:oauth_token_secret].nil?
+    end
+
+  end
+end
