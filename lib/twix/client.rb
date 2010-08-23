@@ -1,16 +1,21 @@
 module Twix
   class Client
     def initialize
+      trap_signals
       @config = Twix::Config.instance.data
       if @config[:consumer_token] && @config[:consumer_secret]
         @oauth = Twix::OAuth.instance
         link! if !linked?
       end
     end
+    
+    def trap_signals
+      trap('INT') { puts "\rExiting..."; exit(0); }
+    end
 
     def feed
       if linked?
-        feeds_thread = fetch()
+        feeds_thread = fetch()        
         while key = STDIN.readline.chomp
           case key
           when 'q'
