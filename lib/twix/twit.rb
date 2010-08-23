@@ -5,7 +5,7 @@ module Twix
     def initialize
       @config = Twix::Config.instance.data
       @oauth = Twix::OAuth.instance
-      print("Enter you message here (max length #{LIMIT})\n")
+      print("Enter you message here (max length #{LIMIT}). To send your message, type !SEND.\n")
       @body = ""
       while data = STDIN.readline.chomp
         @body += data
