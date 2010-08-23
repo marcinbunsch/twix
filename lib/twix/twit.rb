@@ -1,11 +1,11 @@
 module Twix
   class Twit
-    LIMIT = 60
+    LIMIT = 140
 
     def initialize
       @config = Twix::Config.instance.data
       @oauth = Twix::OAuth.instance
-      print("Enter you message here (max length 60)\n")
+      print("Enter you message here (max length #{LIMIT})\n")
       @body = ""
       while data = STDIN.readline.chomp
         @body += data
